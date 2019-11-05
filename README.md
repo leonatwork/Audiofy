@@ -1,0 +1,2 @@
+# Audiofy
+Music and literature have always been the best art forms to deliver one’s thoughts and emotions. Audiofy uses literature and music parallelly i.e. it generates music based on the emotions conveyed by the literature. The application best assists readers for an enhanced reading experience. The work specifically focuses on novels and generates music that captures the change in the distribution of emotion words.  
