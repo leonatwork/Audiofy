@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="refresh" content="2"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+</head>
+<body>
+
+  <div id="desc" style="margin-top: -12px;margin-bottom: 0px;padding: 0px;font-size:100px"></div>
+</body>
+<script type="text/javascript">
+function readTextFile(file)
+{
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", file, false);
+    rawFile.onreadystatechange = function ()
+    {
+        if(rawFile.readyState === 4)
+        {
+            if(rawFile.status === 200 || rawFile.status == 0)
+            {
+                var emotion = rawFile.responseText;
+                emotion=emotion.replace(/[\n\t\r]/g,"")
+                switch (emotion) {
+                  case 'happiness':
+                    tag = '&#128522;'
+                    break;
+                  case 'neutral':
+                    tag = '&#128528;'
+                    break;
+                  case 'angry':
+                    tag = '&#128545;'
+                    break;
+                  case 'love':
+                    tag = '&#128525;'
+                    break;
+                  case 'fun':
+                      tag = '&#128514;'
+                    break;
+                  case 'enthusiasm':
+                      tag = '&#128512;'
+                    break;
+                    case 'worry':
+                        tag = '&#128552;'
+                      break;
+                    case 'relief':
+                      tag = '&#128524;'
+                      break;
+                      case 'sadness':
+                        tag = '&#128532;'
+                        break;
+                        case 'hate':
+                          tag = '&#128548;'
+                          break;
+                    default:
+                  tag = '&#128528;'
+                }
+                document.getElementById('desc').innerHTML = tag;
+            }
+        }
+    }
+    rawFile.send(null);
+}
+readTextFile('extractedEmotion.txt')
+</script>
+</html>

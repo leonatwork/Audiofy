@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <title>Camera</title>
+</head>
+<body>
+  <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+  <a class="navbar-brand" href="http://127.0.0.1:8000/" style="font-size:40px; padding-left: 10%">Audiofy</a>
+  </nav>
+  <div class="container-fluid" style="margin-top:100px; width:80%">
+
+    <audio id="myAudioFun">
+      {% load static %}
+    <source src="{% static "audiofy/fun.mp3" %}" type="audio/mpeg">
+    Your browser does not support the audio element.
+    </audio>
+
+    <audio id="myAudioHappy">
+      {% load static %}
+    <source src="{% static "audiofy/happy.mp3" %}" type="audio/mpeg">
+    Your browser does not support the audio element.
+    </audio>
+
+    <audio id="myAudioSad">
+      {% load static %}
+    <source src="{% static "audiofy/sad.mp3" %}" type="audio/mpeg">
+    Your browser does not support the audio element.
+    </audio>
+
+    <audio id="myAudioWorry">
+      {% load static %}
+    <source src="{% static "audiofy/worry.mp3" %}" type="audio/mpeg">
+    Your browser does not support the audio element.
+    </audio>
+
+    <audio id="myAudioHate">
+      {% load static %}
+    <source src="{% static "audiofy/hate.mp3" %}" type="audio/mpeg">
+    Your browser does not support the audio element.
+    </audio>
+
+    <audio id="myAudioRelief">
+      {% load static %}
+    <source src="{% static "audiofy/relief.mp3" %}" type="audio/mpeg">
+    Your browser does not support the audio element.
+    </audio>
+
+    <audio id="myAudioNeutral">
+      {% load static %}
+    <source src="{% static "audiofy/neutral.mp3" %}" type="audio/mpeg">
+    Your browser does not support the audio element.
+    </audio>
+
+    <h3>Emotion</h3>
+    <div>
+      {% load static %}
+      <iframe id="else" src="{% static "audiofy/emot.html" %}" width="120" height="110" frameBorder="0" scrolling="no"></iframe>
+    </div>
+    <iframe src="{{ camurl }}" width="383" height="680"></iframe>
+    {% load static %}
+    <iframe id="if" src="{% static "audiofy/textext.html" %}" width="730" height="680"></iframe>
+  </div>
+</body>
+<script type="text/javascript">
+oldEmotion='empty'
+let x=document.getElementById("myAudioNeutral");
+
+function playSong(emotion){
+  console.log(emotion)
+  if(emotion!=oldEmotion) {
+    x.pause();
+    x.currentTime = 0;
+  switch (emotion) {
+    case 'happy':
+    x = document.getElementById("myAudioHappy");
+    x.play();
+      break;
+      case 'fun':
+      x = document.getElementById("myAudioFun");
+      x.play();
+        break;
+        case 'sad':
+        x = document.getElementById("myAudioSad");
+        x.play();
+          break;
+          case 'worry':
+          x = document.getElementById("myAudioWorry");
+          x.play();
+            break;
+            case 'hate':
+            x = document.getElementById("myAudioHate");
+            x.play();
+              break;
+              case 'relief':
+              x = document.getElementById("myAudioRelief");
+              x.play();
+                break;
+    default:
+    x = document.getElementById("myAudioNeutral");
+    x.play();
+      break;
+  }
+  oldEmotion=emotion
+}
+}
+function readTextFile(file)
+{
+  var iframe1 = document.getElementById('if');
+  iframe1.src = iframe1.src;
+  var iframe2 = document.getElementById('else');
+  iframe2.src = iframe2.src;
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", file, false);
+    rawFile.onreadystatechange = function ()
+    {
+        if(rawFile.readyState === 4)
+        {
+            if(rawFile.status === 200 || rawFile.status == 0)
+            {
+                var emotion = rawFile.responseText;
+                emotion=emotion.replace(/[\n\t\r]/g,"")
+                playSong(emotion)
+              }
+            }
+          }
+          rawFile.send(null);
+        }
+
+window.setInterval(function(){
+  readTextFile('../static/audiofy/extractedEmotion.txt')
+}, 3000);
+
+</script>
+</html>

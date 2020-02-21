@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <title>Audiofy</title>
+  {% load static %}
+</head>
+<body>
+  <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+  <a class="navbar-brand" href="http://127.0.0.1:8000/" style="font-size:40px; padding-left: 10%">Audiofy</a>
+  </nav>
+  <div class="container-fluid" style="margin-top:100px; width:80%">
+    <h3>What is Audiofy?</h3>
+    <div>
+      <p style="text-align:justify">Music and literature have always been the best art forms to deliver one’s thoughts and emotions.
+        Audiofy uses literature and music parallelly i.e. it generates music based on the emotions conveyed by the literature.
+        The application best assists readers for an enhanced reading experience.
+        The work specifically focuses on novels and generates music that captures the change in the distribution of emotion words.</p>
+    </div>
+    <hr>
+    <h3>How to use?</h3>
+    <div>
+      <ul>
+        <li>Start the IP webcam server on your smart phone</li>
+        <li>Enter the IP address of your webcam below</li>
+        <li>Hold the camera above the page containing texts to scan and extact the emotion</li>
+      </ul>
+    </div>
+    <hr>
+    <div>
+      <h3>Enter the web-cam IP address</h3>
+      <form action="camera" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label>Web-cam IP address</label>
+          <input type="text" class="form-control" placeholder="http://" name="camurl">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
+    <hr>
+    <h3>Extras</h3>
+    <div>
+      <p style="text-align:justify">Make sure that your phone and laptop are connected to the same wifi network.
+        Also, make sure that the room is well lit and try to keep the camera as stable as possible for better character recognition.</p>
+    </div>
+  </div>
+</body>
+</html>
