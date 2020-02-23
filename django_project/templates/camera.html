@@ -61,7 +61,7 @@
     <h3>Emotion</h3>
     <div>
       {% load static %}
-      <iframe id="else" src="{% static "audiofy/emot.html" %}" width="120" height="110" frameBorder="0" scrolling="no"></iframe>
+      <iframe id="else" src="{% static "audiofy/emotion.html" %}" width="120" height="110" frameBorder="0" scrolling="no"></iframe>
     </div>
     <iframe src="{{ camurl }}" width="383" height="680"></iframe>
     {% load static %}
@@ -135,7 +135,7 @@ function readTextFile(file)
 
 window.setInterval(function(){
   readTextFile('../static/audiofy/extractedEmotion.txt')
-}, 3000);
+}, 2000);
 
 </script>
 </html>

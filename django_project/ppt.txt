@@ -1,0 +1,26 @@
+Adarsh
+
+- About the project
+- Phases of Audiofy
+- Briefly describe what we had shown in last ppt
+- Status of our project back then
+
+
+Abhijeet
+
+- Sentiment analysis current status & results
+- Vader Sentiment
+
+Noel
+
+- UI
+- About Django
+- Django's architecture
+- How the project's code is structured
+
+Vedansh
+
+- Music
+
+Demo
+
