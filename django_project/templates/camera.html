@@ -8,15 +8,29 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <title>Camera</title>
 </head>
+<style type="text/css">
+  .read-content {
+    border: 2px solid black;
+    height: 680px;
+    width: 530px;
+    padding : 20px
+}
+
+</style>
 <body>
   <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
-  <a class="navbar-brand" href="http://127.0.0.1:8000/" style="font-size:40px; padding-left: 10%">Audiofy</a>
+  <a class="navbar-brand" href="/" style="font-size:40px; padding-left: 10%">Audiofy</a>
   </nav>
-  <div class="container-fluid" style="margin-top:100px; width:80%">
+  <div class="container" style="margin-top:100px; width:80%">
+    <div class="row">
+  <div id="myEmotion" style="margin-top: -12px;margin-bottom: 0px;padding: 0px;font-size:100px">
+    &#128528;
+  </div>
 
-    <audio id="myAudioFun">
+<audio id="myAudioFun">
       {% load static %}
     <source src="{% static "audiofy/fun.mp3" %}" type="audio/mpeg">
     Your browser does not support the audio element.
@@ -58,18 +72,20 @@
     Your browser does not support the audio element.
     </audio>
 
-    <h3>Emotion</h3>
-    <div>
-      {% load static %}
-      <iframe id="else" src="{% static "audiofy/emotion.html" %}" width="120" height="110" frameBorder="0" scrolling="no"></iframe>
     </div>
-    <iframe src="{{ camurl }}" width="383" height="680"></iframe>
-    {% load static %}
-    <iframe id="if" src="{% static "audiofy/textext.html" %}" width="730" height="680"></iframe>
+    <div class="row">
+      <div class="col">
+        <iframe src="{{ camurl }}" width="383" height="680" frameBorder="0" scrolling="no"></iframe>
+      </div>
+      <div class="col">
+        <pre id="myTextFileContent" class="read-content"></pre>
+      </div>
+    </div>
   </div>
+  <div class="container-fluid" style="margin-top:100px; width:80%">
 </body>
 <script type="text/javascript">
-oldEmotion='empty'
+let oldEmotion='empty'
 let x=document.getElementById("myAudioNeutral");
 
 function playSong(emotion){
@@ -78,19 +94,19 @@ function playSong(emotion){
     x.pause();
     x.currentTime = 0;
   switch (emotion) {
-    case 'happy':
+    case 'joy':
     x = document.getElementById("myAudioHappy");
     x.play();
       break;
-      case 'fun':
+      case 'surprise':
       x = document.getElementById("myAudioFun");
       x.play();
         break;
-        case 'sad':
+        case 'sadness':
         x = document.getElementById("myAudioSad");
         x.play();
           break;
-          case 'worry':
+          case 'fear':
           x = document.getElementById("myAudioWorry");
           x.play();
             break;
@@ -98,7 +114,7 @@ function playSong(emotion){
             x = document.getElementById("myAudioHate");
             x.play();
               break;
-              case 'relief':
+              case 'love':
               x = document.getElementById("myAudioRelief");
               x.play();
                 break;
@@ -110,32 +126,57 @@ function playSong(emotion){
   oldEmotion=emotion
 }
 }
-function readTextFile(file)
-{
-  var iframe1 = document.getElementById('if');
-  iframe1.src = iframe1.src;
-  var iframe2 = document.getElementById('else');
-  iframe2.src = iframe2.src;
-    var rawFile = new XMLHttpRequest();
-    rawFile.open("GET", file, false);
-    rawFile.onreadystatechange = function ()
-    {
-        if(rawFile.readyState === 4)
-        {
-            if(rawFile.status === 200 || rawFile.status == 0)
-            {
-                var emotion = rawFile.responseText;
-                emotion=emotion.replace(/[\n\t\r]/g,"")
-                playSong(emotion)
-              }
-            }
-          }
-          rawFile.send(null);
-        }
 
-window.setInterval(function(){
-  readTextFile('../static/audiofy/extractedEmotion.txt')
-}, 2000);
+const contentPara = document.getElementById('myTextFileContent');
 
+$.ajaxSetup({cache: false});
+
+setInterval(read, 3000);
+
+function read(){
+    jQuery.get('../static/audiofy/output.txt',function(data){
+    contentPara.innerHTML=data;
+    console.log(data);
+    });
+}
+
+
+const contentEmotion = document.getElementById('myEmotion');
+
+$.ajaxSetup({cache: false});
+
+setInterval(readEmotion, 2000);
+
+function readEmotion(){
+    jQuery.get('../static/audiofy/emotion.txt',function(emotion){
+    console.log(emotion);
+    emotion=emotion.replace(/[\n\t\r]/g,"")
+      console.log(emotion)
+      switch (emotion) {
+        case 'joy':
+          tag = '&#128522;'
+          break;
+        case 'sadness':
+          tag = '&#128532;'
+          break;
+        case 'anger':
+          tag = '&#128545;'
+          break;
+        case 'love':
+          tag = '&#128525;'
+          break;
+        case 'surprise':
+            tag = '&#128558;'
+          break;
+        case 'fear':
+            tag = '&#128561;'
+          break;
+        default:
+            tag = '&#128528;'
+    }
+    playSong(emotion)
+    contentEmotion.innerHTML=tag;
+  });
+}
 </script>
 </html>
