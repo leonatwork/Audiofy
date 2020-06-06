@@ -9,6 +9,6 @@
 ## steps
 - Clone the rpo
 ```sh
-cd audiofy-django/audiofy
+cd Audiofy/django-project/
 python3 manage.py runserver localhost:8000
 ```
