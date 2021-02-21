@@ -16,6 +16,12 @@ import os
 import threading
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect
+from django.http import JsonResponse
+from django import forms
+try:
+    from PIL import Image
+except ImportError:
+    import Image
 
 os.environ["EAI_USERNAME"] = ''
 os.environ["EAI_PASSWORD"] = ''
@@ -91,8 +97,15 @@ def background(url):
             print(stop_thread)
             org_time = cur_time
             imgResp = urllib.request.urlopen(url+'/shot.jpg')
+            # print('imgResp1')
+            # print(imgResp.read())
+            # print(type(imgResp.read()))
             imgNp = np.array(bytearray(imgResp.read()), dtype=np.uint8)
+            # print('imgNp')
+            # print(type(imgNp))
             img = cv2.imdecode(imgNp, -1)
+            # print('img')
+            # print(type(img))
             config = ('-l eng --oem 1 --psm 3')
             text = pytesseract.image_to_string(img, config=config)
             emotion = predict(text)
@@ -127,8 +140,28 @@ def renderEbook(request):
 
 @csrf_exempt
 def screenShot(request):
-    print('ss response')
-    print(request.is_ajax())
-    print(request.method)
-    print(request.POST.keys())
-    return JsonResponse({"success": True}, status=200)
+    print('s4 response')
+    if request.method == 'POST':
+        myform = forms.Form(request.POST, request.FILES)
+        if myform.is_valid():
+            print(myform.cleaned_data.keys())
+            print("abcd")
+            print(myform.files['screenshot'])
+            print(myform.files['screenshot'].read())
+            # imgNp = np.fromstring(
+            #     myform.files['screenshot'].read().decode(), np.uint8)
+            # print('imgNp')
+            # print(type(imgNp))
+            # print(len(imgNp))
+            # img = cv2.imdecode(imgNp, -1)
+            # print('imgtest')
+            # img = cv2.imdecode(np.frombuffer(
+            #     myform.files['screenshot'].read(), dtype=np.uint8), cv2.IMREAD_COLOR)
+            # print(type(img))
+            config = ('-l eng --oem 1 --psm 3')
+            text = pytesseract.image_to_string(Image.open(
+                myform.files['screenshot']), config=config)
+            emotion = predict(text)
+            print(f"text : {text}")
+            print(f"emotion : {emotion}")
+            return JsonResponse({"success": True}, status=200)

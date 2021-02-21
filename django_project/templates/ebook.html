@@ -191,7 +191,7 @@
             renderPage(pageNumPending);
             pageNumPending = null;
           }
-        var  image_data = canvas.toDataURL('image/png'); 
+    var image_data = canvas.toDataURL('image/png');
     var block = image_data.split(";");
     var contentType = block[0].split(":")[1]
     var realData = block[1].split(",")[1];
@@ -205,9 +205,9 @@
             timeout: 0,
             processData: false,
             mimeType: "multipart/form-data",
-            contentType: "application/json",
+            contentType: false,
             data: formData,
-            // dataType:"json",
+            dataType:"json",
             success: function (data) {
                    alert("Screenshot saved successfully!");
             },
@@ -215,13 +215,11 @@
                 console.log(e);
             }
             }).done(function(o) {
-
            });
 
         });
       });
 
-      // Update page counters
       document.getElementById("page_num").textContent = num;
     }
 
@@ -237,9 +235,6 @@
       }
     }
 
-    /**
-     * Displays previous page.
-     */
     function onPrevPage() {
       if (pageNum <= 1) {
         return;
@@ -249,9 +244,6 @@
     }
     document.getElementById("prev").addEventListener("click", onPrevPage);
 
-    /**
-     * Displays next page.
-     */
     function onNextPage() {
       if (pageNum >= pdfDoc.numPages) {
         return;
@@ -261,16 +253,6 @@
     }
     document.getElementById("next").addEventListener("click", onNextPage);
 
-    /**
-     * Asynchronously downloads PDF.
-     */
-    pdfjsLib.getDocument(url).promise.then(function (pdfDoc_) {
-      pdfDoc = pdfDoc_;
-      document.getElementById("page_count").textContent = pdfDoc.numPages;
-
-      // Initial/first page rendering
-      renderPage(pageNum);
-    });
     $("#myPdf").on("change", function (e) {
       var file = e.target.files[0];
       if (file.type == "application/pdf") {
