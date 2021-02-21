@@ -1,0 +1,78 @@
+.action-buttons{
+	margin-top: 60px;
+	margin-left: 14%;
+}
+
+.action-button{
+	margin-right: 10px;
+	width: 30%;
+	background-color:#337AB7;
+}
+
+.nav-wrapper{
+	background-color:#337AB7;
+}
+
+.brand-logo{
+	margin-left: 40px; 
+	color: white;
+	font-family: 'Balsamiq Sans', cursive;
+}
+
+.index-image{
+	width: 85%;
+	margin-top: 50px;
+	margin-left: 30px;
+}
+
+.index-title{
+	font-weight: bold; 
+	color:#337AB7; 
+	font-size: 120px; 
+	margin-top: 20%; 
+	font-family: 'Balsamiq Sans', cursive;
+}
+
+.index-subtitle{
+	color: grey;
+	font-family: 'Raleway', sans-serif;
+	margin-left: 16%;
+}
+
+.custom-list ul:not(.browser-default)>li {
+    list-style-type: disc;
+}
+
+.home-image{	
+	width: 90%;
+	margin-top: 90px;
+	margin-left: 40px;
+}
+
+.home-content h3{
+	font-family: 'Balsamiq Sans', cursive;
+}
+
+.home-content li{
+	margin-bottom: 10px;
+}
+
+div .home-content{
+	margin-top: 40px;
+	padding-left: 40px;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    left: 0;
+    right: 0;
+    background-color: #fafafa;
+    padding: 0;
+    max-height: 23%;
+    width: 55%;
+    margin: auto;
+    overflow-y: auto;
+    border-radius: 2px;
+    will-change: top, opacity;
+}
