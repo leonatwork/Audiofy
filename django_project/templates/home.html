@@ -30,19 +30,32 @@
       </ul>
     </div>
     <hr>
-    <div>
-      <h3>Enter the web-cam IP address</h3>
+    <div class="row">
+      <div class="col">
+        <h3>Mode 1</h3>
+        <h4>Enter the web-cam IP address</h4>
       <form action="camera" method="post">
         {% csrf_token %}
         <div class="form-group">
           <label>Web-cam IP address</label>
           <input type="text" class="form-control" placeholder="http://" name="camurl">
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary">Start</button>
       </form>
+      </div>
+      <div class="col">
+        <h3>Mode 2</h3>
+        <h4>Select a book (.pdf)</h4>
+        <div class="form-group">
+          <label>Upload PDF file</label>
+        </div>
+        <form method="get" action="/ebook">
+          <button type="submit" class="btn btn-primary">Select</button>
+      </form>
+      </div>
     </div>
     <hr>
-    <h3>Extras</h3>
+    <h3>Please note</h3>
     <div>
       <p style="text-align:justify">Make sure that your phone and laptop are connected to the same wifi network.
         Also, make sure that the room is well lit and try to keep the camera as stable as possible for better character recognition.</p>

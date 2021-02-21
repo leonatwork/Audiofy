@@ -11,52 +11,84 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 import re
 import nltk
 from nltk.corpus import stopwords
-from nltk.stem.porter import PorterStemmer
+from expertai.nlapi.cloud.client import ExpertAiClient
+import os
+import threading
+
+os.environ["EAI_USERNAME"] = ''
+os.environ["EAI_PASSWORD"] = ''
+
+client = ExpertAiClient()
+
+stop_thread = False
 
 model = load_model("model_lstm_new_ds_2.h5")
 
 with open('tokenizer.pickle', 'rb') as handle:
     tokenizer = pickle.load(handle)
 
-ps = PorterStemmer()
-labels = ["joy","sadness","anger","love","surprise","fear"]
+labels = ["joy", "sadness", "anger", "love", "surprise", "fear"]
 
 
 def process(x):
-    article = str(re.sub('[^a-zA-Z]',' ',x))
+    article = str(re.sub('[^a-zA-Z]', ' ', x))
     article = article.lower()
     article = article.split()
-    article = [ ps.stem(word) for word in article if word not in set(stopwords.words('english'))]
+    article = [word for word in article if word not in set(
+        stopwords.words('english'))]
     article = " ".join(article)
     return article
 
 
+def get_sentiment_score(text):
+    output = client.specific_resource_analysis(
+        body={"document": {"text": text}},
+        params={'language': 'en', 'resource': 'sentiment'})
+    print(f"Sentiment score: {output.sentiment.overall}")
+    return output.sentiment.overall
+
+
 def predict(text):
     article = process(text)
-    q = tokenizer.texts_to_sequences([article])
-    q = pad_sequences(q, maxlen=35)
-    output = model.predict(q)
-    idx = np.argmax(output[0])
-    category = labels[idx]
+    print(article)
+    sentiment_score = get_sentiment_score(article)
+
+    if sentiment_score > 50.0:
+        category = "joy"
+    elif sentiment_score < -50.0:
+        category = "sadness"
+    else:
+        q = tokenizer.texts_to_sequences([article])
+        q = pad_sequences(q, maxlen=35)
+        output = model.predict(q)
+        idx = np.argmax(output[0])
+        category = labels[idx]
     return category
 
 
 def home(request):
+    global stop_thread
+    stop_thread = True
     return render(request, 'home.html', {})
 
 
 def background(url):
     org_time = time.time()
     while True:
+        global stop_thread
+        if stop_thread:
+            break
         cur_time = time.time()
         if cur_time-org_time >= 5:
+            print(stop_thread)
             org_time = cur_time
-            imgResp=urllib.request.urlopen(url+'/shot.jpg')
-            imgNp=np.array(bytearray(imgResp.read()),dtype=np.uint8)
-            img=cv2.imdecode(imgNp,-1)
+            imgResp = urllib.request.urlopen(url+'/shot.jpg')
+            imgNp = np.array(bytearray(imgResp.read()), dtype=np.uint8)
+            img = cv2.imdecode(imgNp, -1)
             config = ('-l eng --oem 1 --psm 3')
             text = pytesseract.image_to_string(img, config=config)
             emotion = predict(text)
+            print(f"emotion : {emotion}")
             f = open("static/audiofy/output.txt", "w")
             f.write(text)
             f.close()
@@ -66,10 +98,20 @@ def background(url):
 
 
 def camVid(request):
-    url = 'http://' + request.POST['camurl']
-    import threading
-    t = threading.Thread(target=background, args=(url,), kwargs={})
-    t.setDaemon(True)
-    t.start()
-    return render(request, 'camera.html', {'camurl': url + '/jsfs.html'})
+    global stop_thread
+    stop_thread = True
+    url = request.POST['camurl']
+    if url != '':
+        url = 'http://' + request.POST['camurl']
+        stop_thread = False
+        thread = threading.Thread(target=background, args=(url,), kwargs={})
+        thread.setDaemon(True)
+        thread.start()
+        return render(request, 'camera.html', {'camurl': url + '/jsfs.html'})
+    return render(request, 'error.html')
 
+
+def renderEbook(request):
+    global stop_thread
+    stop_thread = True
+    return render(request, 'ebook.html')
