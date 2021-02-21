@@ -14,6 +14,8 @@ from nltk.corpus import stopwords
 from expertai.nlapi.cloud.client import ExpertAiClient
 import os
 import threading
+from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import redirect
 
 os.environ["EAI_USERNAME"] = ''
 os.environ["EAI_PASSWORD"] = ''
@@ -72,6 +74,12 @@ def home(request):
     return render(request, 'home.html', {})
 
 
+def cam(request):
+    global stop_thread
+    stop_thread = True
+    return render(request, 'cam.html', {})
+
+
 def background(url):
     org_time = time.time()
     while True:
@@ -115,3 +123,12 @@ def renderEbook(request):
     global stop_thread
     stop_thread = True
     return render(request, 'ebook.html')
+
+
+@csrf_exempt
+def screenShot(request):
+    print('ss response')
+    print(request.is_ajax())
+    print(request.method)
+    print(request.POST.keys())
+    return JsonResponse({"success": True}, status=200)

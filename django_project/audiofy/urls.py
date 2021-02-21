@@ -20,5 +20,6 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('webcam.urls')),
+    path('cam', include('webcam.urls')),
     path('camera', include('webcam.urls'))
 ]
