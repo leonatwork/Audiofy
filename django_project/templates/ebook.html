@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    {% load static %}
+    <!-- Compiled and minified CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Balsamiq+Sans:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Raleway:wght@200&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="../static/audiofy/styles/main.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <title>eBook</title>
+  </head>
+  <style type="text/css">
+    .read-content {
+      border: 2px solid black;
+      height: 680px;
+      width: 530px;
+      padding: 20px;
+    }
+  </style>
+  <body>
+    <div class="navigation-bar">
+      <nav>
+        <div class="nav-wrapper">
+          <a href="/" class="brand-logo">Audiofy <span id="myEmotion">&#128528;</span></a
+            ></a>
+        </div>
+      </nav>
+    </div>
+    <!-- <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+      <a
+        class="navbar-brand"
+        href="/"
+        style="font-size: 40px; padding-left: 10%"
+        >Audiofy <span id="myEmotion">&#128528;</span></a
+      >
+    </nav> -->
+    <div class="container-fluid" style="margin-top: 10px; width: 80%">
+      <div class="form-group">
+        <label>Select PDF file</label>
+        <input type="file" id="myPdf" />
+      </div>
+    </div>
+    <center>
+      <canvas id="the-canvas"></canvas>
+      <div>
+        <button id="prev">Previous</button>
+        <button id="next">Next</button>
+        &nbsp; &nbsp;
+        <span
+          >Page: <span id="page_num"></span> / <span id="page_count"></span
+        ></span>
+      </div>
+    </center>
+
+    <audio id="myAudioFun">
+      {% load static %} <source src="{% static "audiofy/fun.mp3" %}"
+      type="audio/mpeg"> Your browser does not support the audio element.
+    </audio>
+
+    <audio id="myAudioHappy">
+      {% load static %} <source src="{% static "audiofy/happy.mp3" %}"
+      type="audio/mpeg"> Your browser does not support the audio element.
+    </audio>
+
+    <audio id="myAudioSad">
+      {% load static %} <source src="{% static "audiofy/sad.mp3" %}"
+      type="audio/mpeg"> Your browser does not support the audio element.
+    </audio>
+
+    <audio id="myAudioWorry">
+      {% load static %} <source src="{% static "audiofy/worry.mp3" %}"
+      type="audio/mpeg"> Your browser does not support the audio element.
+    </audio>
+
+    <audio id="myAudioHate">
+      {% load static %} <source src="{% static "audiofy/hate.mp3" %}"
+      type="audio/mpeg"> Your browser does not support the audio element.
+    </audio>
+
+    <audio id="myAudioRelief">
+      {% load static %} <source src="{% static "audiofy/relief.mp3" %}"
+      type="audio/mpeg"> Your browser does not support the audio element.
+    </audio>
+
+    <audio id="myAudioNeutral">
+      {% load static %} <source src="{% static "audiofy/neutral.mp3" %}"
+      type="audio/mpeg"> Your browser does not support the audio element.
+    </audio>
+  </body>
+  <script type="text/javascript">
+    var pdfjsLib = window["pdfjs-dist/build/pdf"];
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      "https://mozilla.github.io/pdf.js/build/pdf.worker.js";
+    var url = "../static/audiofy/sample_book.pdf";
+
+    var pdfDoc = null,
+      pageNum = 1,
+      pageRendering = false,
+      pageNumPending = null,
+      scale = 1.0,
+      canvas = document.getElementById("the-canvas"),
+      ctx = canvas.getContext("2d");
+
+    /**
+     * Get page info from document, resize canvas accordingly, and render page.
+     * @param num Page number.
+     */
+     function b64toBlob(b64Data, contentType, sliceSize) {
+        contentType = contentType || '';
+        sliceSize = sliceSize || 512;
+
+        var byteCharacters = atob(b64Data);
+        var byteArrays = [];
+
+        for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+            var slice = byteCharacters.slice(offset, offset + sliceSize);
+            var byteNumbers = new Array(slice.length);
+            for (var i = 0; i < slice.length; i++) {
+                byteNumbers[i] = slice.charCodeAt(i);
+            }
+            var byteArray = new Uint8Array(byteNumbers);
+            byteArrays.push(byteArray);
+        }
+
+      var blob = new Blob(byteArrays, {type: contentType});
+      return blob;
+    }
+
+    function renderPage(num) {
+      pageRendering = true;
+      // Using promise to fetch the page
+
+
+
+      pdfDoc.getPage(num).then(function (page) {
+        var viewport = page.getViewport({ scale: scale });
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        // Render PDF page into canvas context
+        var renderContext = {
+          canvasContext: ctx,
+          viewport: viewport,
+        };
+        var renderTask = page.render(renderContext);
+
+        // Wait for rendering to finish
+        renderTask.promise.then(function () {
+          pageRendering = false;
+          if (pageNumPending !== null) {
+            // New page rendering is pending
+            renderPage(pageNumPending);
+            pageNumPending = null;
+          }
+    var image_data = canvas.toDataURL('image/png');
+    var block = image_data.split(";");
+    var contentType = block[0].split(":")[1]
+    var realData = block[1].split(",")[1];
+
+    var blob = b64toBlob(realData, contentType);
+    var formData = new FormData();
+    formData.append("screenshot", blob, 'screenshot.png');
+    $.ajax({
+            url: "save_screenshot",
+            type: "POST",
+            timeout: 0,
+            processData: false,
+            mimeType: "multipart/form-data",
+            contentType: false,
+            data: formData,
+            dataType:"json",
+            success: function (data) {
+                   alert("Screenshot saved successfully!");
+            },
+            error: function (e) {
+                console.log(e);
+            }
+            }).done(function(o) {
+           });
+
+        });
+      });
+
+      document.getElementById("page_num").textContent = num;
+    }
+
+    /**
+     * If another page rendering in progress, waits until the rendering is
+     * finised. Otherwise, executes rendering immediately.
+     */
+    function queueRenderPage(num) {
+      if (pageRendering) {
+        pageNumPending = num;
+      } else {
+        renderPage(num);
+      }
+    }
+
+    function onPrevPage() {
+      if (pageNum <= 1) {
+        return;
+      }
+      pageNum--;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById("prev").addEventListener("click", onPrevPage);
+
+    function onNextPage() {
+      if (pageNum >= pdfDoc.numPages) {
+        return;
+      }
+      pageNum++;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById("next").addEventListener("click", onNextPage);
+
+    $("#myPdf").on("change", function (e) {
+      var file = e.target.files[0];
+      if (file.type == "application/pdf") {
+        var fileReader = new FileReader();
+        fileReader.onload = function () {
+          var pdfData = new Uint8Array(this.result);
+          // Using DocumentInitParameters object to load binary data.
+          var loadingTask = pdfjsLib.getDocument({ data: pdfData });
+          loadingTask.promise.then(function (pdfDoc_) {
+            pdfDoc = pdfDoc_;
+            document.getElementById("page_count").textContent = pdfDoc.numPages;
+
+            // Initial/first page rendering
+            pageNum = 1;
+            renderPage(pageNum);
+          });
+        };
+        fileReader.readAsArrayBuffer(file);
+      }
+    });
+    let oldEmotion = "empty";
+    let x = document.getElementById("myAudioNeutral");
+    function playSong(emotion) {
+      console.log(emotion);
+      if (emotion != oldEmotion) {
+        x.pause();
+        x.currentTime = 0;
+        switch (emotion) {
+          case "joy":
+            x = document.getElementById("myAudioHappy");
+            x.play();
+            break;
+          case "surprise":
+            x = document.getElementById("myAudioFun");
+            x.play();
+            break;
+          case "sadness":
+            x = document.getElementById("myAudioSad");
+            x.play();
+            break;
+          case "fear":
+            x = document.getElementById("myAudioWorry");
+            x.play();
+            break;
+          case "hate":
+            x = document.getElementById("myAudioHate");
+            x.play();
+            break;
+          case "love":
+            x = document.getElementById("myAudioRelief");
+            x.play();
+            break;
+          default:
+            x = document.getElementById("myAudioNeutral");
+            x.play();
+            break;
+        }
+        oldEmotion = emotion;
+      }
+    }
+
+    // const contentPara = document.getElementById('myTextFileContent');
+
+    // $.ajaxSetup({cache: false});
+
+    // setInterval(read, 3000);
+
+    // function read(){
+    //     jQuery.get('../static/audiofy/output.txt',function(data){
+    //     contentPara.innerHTML=data;
+    //     console.log(data);
+    //     });
+    // }
+
+    const contentEmotion = document.getElementById("myEmotion");
+
+    $.ajaxSetup({ cache: false });
+
+    //setInterval(readEmotion, 2000);
+
+    function readEmotion() {
+      jQuery.get("../static/audiofy/emotion.txt", function (emotion) {
+        console.log(emotion);
+        emotion = emotion.replace(/[\n\t\r]/g, "");
+        console.log(emotion);
+        switch (emotion) {
+          case "joy":
+            tag = "&#128522;";
+            break;
+          case "sadness":
+            tag = "&#128532;";
+            break;
+          case "anger":
+            tag = "&#128545;";
+            break;
+          case "love":
+            tag = "&#128525;";
+            break;
+          case "surprise":
+            tag = "&#128558;";
+            break;
+          case "fear":
+            tag = "&#128561;";
+            break;
+          default:
+            tag = "&#128528;";
+        }
+        //playSong(emotion)
+        contentEmotion.innerHTML = tag;
+      });
+    }
+  </script>
+</html>
