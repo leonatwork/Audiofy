@@ -97,15 +97,8 @@ def background(url):
             print(stop_thread)
             org_time = cur_time
             imgResp = urllib.request.urlopen(url+'/shot.jpg')
-            # print('imgResp1')
-            # print(imgResp.read())
-            # print(type(imgResp.read()))
             imgNp = np.array(bytearray(imgResp.read()), dtype=np.uint8)
-            # print('imgNp')
-            # print(type(imgNp))
             img = cv2.imdecode(imgNp, -1)
-            # print('img')
-            # print(type(img))
             config = ('-l eng --oem 1 --psm 3')
             text = pytesseract.image_to_string(img, config=config)
             emotion = predict(text)
@@ -140,28 +133,17 @@ def renderEbook(request):
 
 @csrf_exempt
 def screenShot(request):
-    print('s4 response')
     if request.method == 'POST':
         myform = forms.Form(request.POST, request.FILES)
         if myform.is_valid():
             print(myform.cleaned_data.keys())
-            print("abcd")
-            print(myform.files['screenshot'])
-            print(myform.files['screenshot'].read())
-            # imgNp = np.fromstring(
-            #     myform.files['screenshot'].read().decode(), np.uint8)
-            # print('imgNp')
-            # print(type(imgNp))
-            # print(len(imgNp))
-            # img = cv2.imdecode(imgNp, -1)
-            # print('imgtest')
-            # img = cv2.imdecode(np.frombuffer(
-            #     myform.files['screenshot'].read(), dtype=np.uint8), cv2.IMREAD_COLOR)
-            # print(type(img))
             config = ('-l eng --oem 1 --psm 3')
             text = pytesseract.image_to_string(Image.open(
                 myform.files['screenshot']), config=config)
             emotion = predict(text)
             print(f"text : {text}")
             print(f"emotion : {emotion}")
+            f = open("static/audiofy/emotion.txt", "w")
+            f.write(emotion)
+            f.close()
             return JsonResponse({"success": True}, status=200)
