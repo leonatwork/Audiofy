@@ -16,6 +16,12 @@ import os
 import threading
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect
+from django.http import JsonResponse
+from django import forms
+try:
+    from PIL import Image
+except ImportError:
+    import Image
 
 os.environ["EAI_USERNAME"] = ''
 os.environ["EAI_PASSWORD"] = ''
@@ -127,8 +133,17 @@ def renderEbook(request):
 
 @csrf_exempt
 def screenShot(request):
-    print('ss response')
-    print(request.is_ajax())
-    print(request.method)
-    print(request.POST.keys())
-    return JsonResponse({"success": True}, status=200)
+    if request.method == 'POST':
+        myform = forms.Form(request.POST, request.FILES)
+        if myform.is_valid():
+            print(myform.cleaned_data.keys())
+            config = ('-l eng --oem 1 --psm 3')
+            text = pytesseract.image_to_string(Image.open(
+                myform.files['screenshot']), config=config)
+            emotion = predict(text)
+            print(f"text : {text}")
+            print(f"emotion : {emotion}")
+            f = open("static/audiofy/emotion.txt", "w")
+            f.write(emotion)
+            f.close()
+            return JsonResponse({"success": True}, status=200)
