@@ -72,7 +72,7 @@ Follow the following steps to use the app properly :
 
 ### Screen shots
 
-Following are two screen shots of our application.
+Following are the screen shots of our application:
 
 #### Home Page 
 ![Home Page](https://user-images.githubusercontent.com/30263342/108684607-1f9dce80-7519-11eb-89e3-f5ca3573fdee.png)
