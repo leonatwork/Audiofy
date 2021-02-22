@@ -1,0 +1,10 @@
+# Required python version 3.7 or 3.8
+
+django
+pytesseract
+opencv-python
+opencv-contrib-python
+tensorflow
+numpy
+nltk
+expertai-nlapi

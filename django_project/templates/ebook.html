@@ -48,37 +48,27 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <title>eBook</title>
   </head>
-  <style type="text/css">
-    .read-content {
-      border: 2px solid black;
-      height: 680px;
-      width: 530px;
-      padding: 20px;
-    }
-  </style>
   <body>
     <div class="navigation-bar">
       <nav>
         <div class="nav-wrapper">
-          <a href="/" class="brand-logo">Audiofy <span id="myEmotion">&#128528;</span></a
-            ></a>
+          <a href="/" class="brand-logo">Audiofy</a>
         </div>
       </nav>
     </div>
-    <!-- <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
-      <a
-        class="navbar-brand"
-        href="/"
-        style="font-size: 40px; padding-left: 10%"
-        >Audiofy <span id="myEmotion">&#128528;</span></a
-      >
-    </nav> -->
+    <div class="container" style="margin-top:20px; width:80%">
+      <div class="row">
+    <div id="myEmotion" style="margin-top: -12px;margin-bottom: 0px;padding: 0px;font-size:100px">
+      &#128528;
+    </div>
     <div class="container-fluid" style="margin-top: 10px; width: 80%">
       <div class="form-group">
         <label>Select PDF file</label>
         <input type="file" id="myPdf" />
       </div>
     </div>
+    </div>
+    
     <center>
       <canvas id="the-canvas"></canvas>
       <div>
@@ -130,9 +120,8 @@
     var pdfjsLib = window["pdfjs-dist/build/pdf"];
     pdfjsLib.GlobalWorkerOptions.workerSrc =
       "https://mozilla.github.io/pdf.js/build/pdf.worker.js";
-    var url = "../static/audiofy/sample_book.pdf";
 
-    var pdfDoc = null,
+    let pdfDoc = null,
       pageNum = 1,
       pageRendering = false,
       pageNumPending = null,
@@ -140,16 +129,12 @@
       canvas = document.getElementById("the-canvas"),
       ctx = canvas.getContext("2d");
 
-    /**
-     * Get page info from document, resize canvas accordingly, and render page.
-     * @param num Page number.
-     */
      function b64toBlob(b64Data, contentType, sliceSize) {
         contentType = contentType || '';
         sliceSize = sliceSize || 512;
 
-        var byteCharacters = atob(b64Data);
-        var byteArrays = [];
+        let byteCharacters = atob(b64Data);
+        let byteArrays = [];
 
         for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
             var slice = byteCharacters.slice(offset, offset + sliceSize);
@@ -157,76 +142,62 @@
             for (var i = 0; i < slice.length; i++) {
                 byteNumbers[i] = slice.charCodeAt(i);
             }
-            var byteArray = new Uint8Array(byteNumbers);
+            let byteArray = new Uint8Array(byteNumbers);
             byteArrays.push(byteArray);
         }
 
-      var blob = new Blob(byteArrays, {type: contentType});
+      let blob = new Blob(byteArrays, {type: contentType});
       return blob;
     }
 
     function renderPage(num) {
       pageRendering = true;
-      // Using promise to fetch the page
-
-
-
       pdfDoc.getPage(num).then(function (page) {
         var viewport = page.getViewport({ scale: scale });
         canvas.height = viewport.height;
         canvas.width = viewport.width;
 
-        // Render PDF page into canvas context
-        var renderContext = {
+        let renderContext = {
           canvasContext: ctx,
           viewport: viewport,
         };
-        var renderTask = page.render(renderContext);
+        let renderTask = page.render(renderContext);
 
-        // Wait for rendering to finish
         renderTask.promise.then(function () {
           pageRendering = false;
           if (pageNumPending !== null) {
-            // New page rendering is pending
             renderPage(pageNumPending);
             pageNumPending = null;
           }
-    var image_data = canvas.toDataURL('image/png');
-    var block = image_data.split(";");
-    var contentType = block[0].split(":")[1]
-    var realData = block[1].split(",")[1];
-
-    var blob = b64toBlob(realData, contentType);
-    var formData = new FormData();
-    formData.append("screenshot", blob, 'screenshot.png');
-    $.ajax({
-            url: "save_screenshot",
-            type: "POST",
-            timeout: 0,
-            processData: false,
-            mimeType: "multipart/form-data",
-            contentType: false,
-            data: formData,
-            dataType:"json",
-            success: function (data) {
-                   alert("Screenshot saved successfully!");
-            },
-            error: function (e) {
-                console.log(e);
-            }
-            }).done(function(o) {
-           });
-
+          let image_data = canvas.toDataURL('image/png');
+          let block = image_data.split(";");
+          let contentType = block[0].split(":")[1]
+          let realData = block[1].split(",")[1];
+          let blob = b64toBlob(realData, contentType);
+          let formData = new FormData();
+          formData.append("screenshot", blob, 'screenshot.png');
+          $.ajax({
+              url: "save_screenshot",
+              type: "POST",
+              timeout: 0,
+              processData: false,
+              mimeType: "multipart/form-data",
+              contentType: false,
+              data: formData,
+              dataType:"json",
+              success: function (data) {
+                    console.lg("Screenshot saved successfully!");
+              },
+              error: function (e) {
+                  console.log(e);
+              }
+            });
         });
       });
 
       document.getElementById("page_num").textContent = num;
     }
 
-    /**
-     * If another page rendering in progress, waits until the rendering is
-     * finised. Otherwise, executes rendering immediately.
-     */
     function queueRenderPage(num) {
       if (pageRendering) {
         pageNumPending = num;
@@ -254,18 +225,15 @@
     document.getElementById("next").addEventListener("click", onNextPage);
 
     $("#myPdf").on("change", function (e) {
-      var file = e.target.files[0];
+      let file = e.target.files[0];
       if (file.type == "application/pdf") {
-        var fileReader = new FileReader();
+        let fileReader = new FileReader();
         fileReader.onload = function () {
-          var pdfData = new Uint8Array(this.result);
-          // Using DocumentInitParameters object to load binary data.
-          var loadingTask = pdfjsLib.getDocument({ data: pdfData });
+          let pdfData = new Uint8Array(this.result);
+          let loadingTask = pdfjsLib.getDocument({ data: pdfData });
           loadingTask.promise.then(function (pdfDoc_) {
             pdfDoc = pdfDoc_;
             document.getElementById("page_count").textContent = pdfDoc.numPages;
-
-            // Initial/first page rendering
             pageNum = 1;
             renderPage(pageNum);
           });
@@ -273,6 +241,16 @@
         fileReader.readAsArrayBuffer(file);
       }
     });
+
+    const audioMapper = {
+      joy: "myAudioHappy",
+      sadness: "myAudioSad",
+      anger: "myAudioHate",
+      love: "myAudioRelief",
+      surprise: "myAudioFun",
+      fear: "myAudioWorry"
+    };
+
     let oldEmotion = "empty";
     let x = document.getElementById("myAudioNeutral");
     function playSong(emotion) {
@@ -280,87 +258,32 @@
       if (emotion != oldEmotion) {
         x.pause();
         x.currentTime = 0;
-        switch (emotion) {
-          case "joy":
-            x = document.getElementById("myAudioHappy");
-            x.play();
-            break;
-          case "surprise":
-            x = document.getElementById("myAudioFun");
-            x.play();
-            break;
-          case "sadness":
-            x = document.getElementById("myAudioSad");
-            x.play();
-            break;
-          case "fear":
-            x = document.getElementById("myAudioWorry");
-            x.play();
-            break;
-          case "hate":
-            x = document.getElementById("myAudioHate");
-            x.play();
-            break;
-          case "love":
-            x = document.getElementById("myAudioRelief");
-            x.play();
-            break;
-          default:
-            x = document.getElementById("myAudioNeutral");
-            x.play();
-            break;
-        }
+        x = document.getElementById(audioMapper[emotion] != undefined ? audioMapper[emotion] : "myAudioNeutral");
+        x.play();
         oldEmotion = emotion;
       }
     }
-
-    // const contentPara = document.getElementById('myTextFileContent');
-
-    // $.ajaxSetup({cache: false});
-
-    // setInterval(read, 3000);
-
-    // function read(){
-    //     jQuery.get('../static/audiofy/output.txt',function(data){
-    //     contentPara.innerHTML=data;
-    //     console.log(data);
-    //     });
-    // }
 
     const contentEmotion = document.getElementById("myEmotion");
 
     $.ajaxSetup({ cache: false });
 
-    //setInterval(readEmotion, 2000);
+    setInterval(readEmotion, 2000);
+    
+    const emojiMapper = {
+      joy: "&#128522;",
+      sadness: "&#128532;",
+      anger: "&#128545;",
+      love: "&#128525;",
+      surprise: "&#128558;",
+      fear: "&#128561;",
+    };
 
     function readEmotion() {
       jQuery.get("../static/audiofy/emotion.txt", function (emotion) {
-        console.log(emotion);
         emotion = emotion.replace(/[\n\t\r]/g, "");
-        console.log(emotion);
-        switch (emotion) {
-          case "joy":
-            tag = "&#128522;";
-            break;
-          case "sadness":
-            tag = "&#128532;";
-            break;
-          case "anger":
-            tag = "&#128545;";
-            break;
-          case "love":
-            tag = "&#128525;";
-            break;
-          case "surprise":
-            tag = "&#128558;";
-            break;
-          case "fear":
-            tag = "&#128561;";
-            break;
-          default:
-            tag = "&#128528;";
-        }
-        //playSong(emotion)
+        tag = (emojiMapper[emotion]!=undefined) ? emojiMapper[emotion] : "&#128528;";
+        playSong(emotion)
         contentEmotion.innerHTML = tag;
       });
     }

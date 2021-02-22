@@ -29,7 +29,8 @@
     border: 2px solid black;
     height: 680px;
     width: 530px;
-    padding : 20px
+    padding : 20px;
+    margin-left: 30px;
 }
 
 </style>
@@ -41,7 +42,7 @@
       </div>
     </nav>
   </div>
-  <div class="container" style="margin-top:100px; width:80%">
+  <div class="container" style="margin-top:20px; width:80%">
     <div class="row">
   <div id="myEmotion" style="margin-top: -12px;margin-bottom: 0px;padding: 0px;font-size:100px">
     &#128528;
@@ -104,44 +105,22 @@
 <script type="text/javascript">
 let oldEmotion='empty'
 let x=document.getElementById("myAudioNeutral");
-
+const audioMapper = {
+      joy: "myAudioHappy",
+      sadness: "myAudioSad",
+      anger: "myAudioHate",
+      love: "myAudioRelief",
+      surprise: "myAudioFun",
+      fear: "myAudioWorry"
+    };
 function playSong(emotion){
-  console.log(emotion)
   if(emotion!=oldEmotion) {
     x.pause();
     x.currentTime = 0;
-  switch (emotion) {
-    case 'joy':
-    x = document.getElementById("myAudioHappy");
+    x = document.getElementById(audioMapper[emotion] != undefined ? audioMapper[emotion] : "myAudioNeutral");
     x.play();
-      break;
-      case 'surprise':
-      x = document.getElementById("myAudioFun");
-      x.play();
-        break;
-        case 'sadness':
-        x = document.getElementById("myAudioSad");
-        x.play();
-          break;
-          case 'fear':
-          x = document.getElementById("myAudioWorry");
-          x.play();
-            break;
-            case 'hate':
-            x = document.getElementById("myAudioHate");
-            x.play();
-              break;
-              case 'love':
-              x = document.getElementById("myAudioRelief");
-              x.play();
-                break;
-    default:
-    x = document.getElementById("myAudioNeutral");
-    x.play();
-      break;
+    oldEmotion=emotion
   }
-  oldEmotion=emotion
-}
 }
 
 const contentPara = document.getElementById('myTextFileContent');
@@ -157,40 +136,26 @@ function read(){
     });
 }
 
-
 const contentEmotion = document.getElementById('myEmotion');
 
 $.ajaxSetup({cache: false});
 
 setInterval(readEmotion, 2000);
 
+const emojiMapper = {
+      joy: "&#128522;",
+      sadness: "&#128532;",
+      anger: "&#128545;",
+      love: "&#128525;",
+      surprise: "&#128558;",
+      fear: "&#128561;",
+    };
+
 function readEmotion(){
     jQuery.get('../static/audiofy/emotion.txt',function(emotion){
     console.log(emotion);
     emotion=emotion.replace(/[\n\t\r]/g,"")
-      console.log(emotion)
-      switch (emotion) {
-        case 'joy':
-          tag = '&#128522;'
-          break;
-        case 'sadness':
-          tag = '&#128532;'
-          break;
-        case 'anger':
-          tag = '&#128545;'
-          break;
-        case 'love':
-          tag = '&#128525;'
-          break;
-        case 'surprise':
-            tag = '&#128558;'
-          break;
-        case 'fear':
-            tag = '&#128561;'
-          break;
-        default:
-            tag = '&#128528;'
-    }
+    tag = (emojiMapper[emotion]!=undefined) ? emojiMapper[emotion] : "&#128528;";
     playSong(emotion)
     contentEmotion.innerHTML=tag;
   });
