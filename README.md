@@ -10,6 +10,8 @@ Each of these phases is handled separately with the best possible technique to y
   <img src="https://user-images.githubusercontent.com/30263342/68184327-b82adb00-ffc4-11e9-98b7-5f6911174886.png" align = "center" alt = "Phases of Audiofy"/>
 </p>
 
+Get an exact idea of how Audiofy works though [this](https://www.youtube.com/watch?v=A8QpUxGm1Jc&t=7s) video
+
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
